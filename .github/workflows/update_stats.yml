@@ -1,0 +1,46 @@
+name: Update README Snapshot Stats
+
+on:
+  schedule:
+    # Se ejecuta a las 03:00 UTC todos los días
+    - cron: '0 3 * * *'
+  workflow_dispatch: # Permite la ejecución manual desde la pestaña Actions de GitHub
+  push:
+    branches:
+      - main # Se ejecuta cada vez que hay un push a la rama main
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      # Es necesario dar permisos de escritura al job para que pueda hacer commit
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Update snapshot count in README
+        run: |
+          # Contar los archivos .md en la carpeta snapshots
+          # Usamos find para más seguridad, y redirigimos el error si la carpeta no existe
+          COUNT=$(find snapshots -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+          echo "📊 Encontrados $COUNT snapshots."
+          # Usamos sed para reemplazar el contenido entre las etiquetas
+          sed -i "s|<!-- SNAPSHOT_COUNT_START -->.*<!-- SNAPSHOT_COUNT_END -->|<!-- SNAPSHOT_COUNT_START -->$COUNT<!-- SNAPSHOT_COUNT_END -->|g" README.md
+
+      - name: Commit and push if there are changes
+        run: |
+          # Configurar el usuario de Git para el bot de actions
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Revisar si hay cambios en el README.md antes de hacer commit
+          if ! git diff --quiet README.md; then
+            git add README.md
+            git commit -m "docs(readme): Actualizar contador de snapshots a $COUNT"
+            git push
+            echo "✅ README.md actualizado exitosamente."
+          else
+            echo "No hay cambios en README.md. Saltando commit."
+          fi
