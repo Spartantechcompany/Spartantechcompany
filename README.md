@@ -2,6 +2,8 @@
 
 ¡Hola! 👋 Este repositorio es un espacio de trabajo experimental para explorar un nuevo paradigma de desarrollo: la orquestación de tareas complejas a través de **agentes de IA** directamente desde la terminal, con **Google Gemini** como motor principal.
 
+📊 **Snapshots totales creados:** <!-- SNAPSHOT_COUNT_START -->0<!-- SNAPSHOT_COUNT_END -->
+
 ## El Concepto de "Agentes"
 
 Un "agente" en este proyecto es un script automatizado diseñado para realizar una secuencia de tareas. Estos agentes viven dentro del repositorio (en la carpeta `/agents`) y pueden ser ejecutados y actualizados para expandir sus capacidades.
