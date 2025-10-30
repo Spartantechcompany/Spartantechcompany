@@ -9,6 +9,21 @@ Un "agente" en este proyecto es un script automatizado diseñado para realizar u
 ### Agentes Actuales:
 *   **Snapshot_AGENT:** Automatiza el proceso de guardar el trabajo. Genera un resumen de los cambios, lo empaqueta en un archivo de snapshot y sincroniza todo el estado del proyecto con GitHub.
 
+### Demostración del Agente
+
+```shell
+$ bash agents/Snapshot_AGENT.sh
+
+🚀 Iniciando Snapshot_AGENT...
+📂 Directorio de snapshots verificado.
+📝 Creando resumen de cambios...
+🔄 Sincronizando con GitHub...
+  - Archivos añadidos al commit.
+  - Commit creado con el mensaje: 'snapshot: Archivo de trabajo del 2025-10-29'
+  - Cambios subidos a la rama principal.
+✅ ¡Snapshot completado y sincronizado con éxito!
+```
+
 ## Visión del Proyecto
 
 El objetivo es transformar la terminal en una interfaz de conversación inteligente, donde los flujos de trabajo (desde hacer un commit hasta interactuar con servicios en la nube) son manejados por agentes especializados, haciendo el proceso de desarrollo más rápido, intuitivo y poderoso.
