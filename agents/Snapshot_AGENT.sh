@@ -8,8 +8,12 @@ echo "🚀 Iniciando Snapshot_AGENT v3..."
 
 # --- 1. Sincronizar con Repositorio Remoto (Paso Crítico) ---
 echo "🔄 Sincronizando con GitHub..."
+echo "  - Guardando cambios locales (git stash)..."
+git stash
 echo "  - Descargando cambios remotos (git pull --rebase)..."
 git pull --rebase
+echo "  - Aplicando cambios locales guardados (git stash pop)..."
+git stash pop
 
 # --- 2. Definir Nombres y Rutas ---
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
