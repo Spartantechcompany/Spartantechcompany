@@ -16,32 +16,29 @@ fi
 
 echo "🔍 Escaneando archivos en '$SNAPSHOT_DIR'..."
 
-# --- 2. Encontrar y Eliminar Duplicados ---
-# Usamos un archivo temporal para mapear checksums a nombres de archivo
-TMP_FILE=$(mktemp)
-# El -t en ls ordena los archivos por fecha de modificación (el más antiguo primero)
-# por lo que siempre conservaremos la primera entrada que encontremos.
-find "$SNAPSHOT_DIR" -type f -name "*.md" -print0 | xargs -0 ls -t | xargs -I {} md5sum "{}" > "$TMP_FILE"
+# --- 2. Encontrar y Eliminar Duplicados (Revisado) ---
+echo "🔍 Escaneando archivos en '$SNAPSHOT_DIR'..."
 
-# Usamos un array asociativo para rastrear los checksums que ya hemos visto
-declare -A seen_checksums
+# Create a temporary file to store checksums of files we've decided to keep
+KEPT_CHECKSUMS_FILE=$(mktemp)
 
-# Leemos el archivo temporal línea por línea
-while IFS= read -r line; do
-  checksum=$(echo "$line" | awk '{print $1}')
-  file_path=$(echo "$line" | awk '{$1=""; print $0}' | sed 's/^ *//') # Extraer el path
+# Find all markdown files in the snapshots directory, sorted by modification time (oldest first)
+# This ensures that when we encounter a duplicate checksum, the file we're currently processing
+# is *newer* than the one we've already seen (and kept).
+find "$SNAPSHOT_DIR" -type f -name "*.md" -print0 | xargs -0 ls -t | while IFS= read -r file_path; do
+    checksum=$(md5sum "$file_path" | awk '{print $1}')
 
-  if [[ -n "${seen_checksums[$checksum]}" ]]; then
-    # Si ya hemos visto este checksum, el archivo es un duplicado y lo borramos.
-    echo "  - Eliminando duplicado: $file_path"
-    rm "$file_path"
-  else
-    # Si es la primera vez que vemos este checksum, lo marcamos como visto.
-    seen_checksums[$checksum]=1
-  fi
-done < "$TMP_FILE"
+    # Check if this checksum has already been seen (meaning we've kept an older file with this content)
+    if grep -q "^$checksum$" "$KEPT_CHECKSUMS_FILE"; then
+        echo "  - Eliminando duplicado: $file_path"
+        rm "$file_path"
+    else
+        # This is the first time we've seen this checksum (or it's a unique file), so keep it
+        echo "$checksum" >> "$KEPT_CHECKSUMS_FILE"
+    fi
+done
 
 # --- 3. Limpieza Final ---
-rm "$TMP_FILE"
+rm "$KEPT_CHECKSUMS_FILE"
 
 echo "✅ ¡Limpieza de snapshots duplicados completada!"
