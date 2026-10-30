@@ -1,4 +1,4 @@
-# 🤖 Agent-Driven Workspace powered by Gemini
+# 🤖 Agent-Driven Workspace
 
 ¡Hola! 👋 Este repositorio es un espacio de trabajo experimental para explorar un nuevo paradigma de desarrollo: la orquestación de tareas complejas a través de **agentes de IA** directamente desde la terminal, con **Google Gemini** como motor principal.
 
